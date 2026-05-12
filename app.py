@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 # ページ設定（必ず最初に呼ぶ）
 # ============================================================
 st.set_page_config(
-    page_title="FinSight | 財務分析",
+    page_title="4Eseen | 財務分析",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -1489,7 +1489,7 @@ def render_hero_screen():
     st.markdown("""
     <div class="upload-hero">
       <div class="fin-section-label">Financial Analysis Platform</div>
-      <h1>FinSight</h1>
+      <h1>4Eseen</h1>
       <p>CSVをアップロードするだけで、財務諸表を多角的に分析。<br>
          数字の裏にある「複数の可能性」を可視化し、想定外を減らします。</p>
       <div class="feature-grid">
@@ -1537,7 +1537,7 @@ def render_sidebar(df=None):
         <div style="padding: 8px 0 20px;">
           <div style="font-size:1.5rem; font-weight:900; background:linear-gradient(90deg,{C_ACCENT},{C_PURPLE});
                       -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
-            📊 FinSight
+            📊 4Eseen
           </div>
           <div style="font-size:0.75rem; color:{C_MUTED}; margin-top:2px;">財務分析プラットフォーム</div>
         </div>
@@ -1579,7 +1579,7 @@ def render_sidebar(df=None):
 
         st.markdown(f"""
         <div style="position:fixed; bottom:16px; font-size:0.72rem; color:{C_MUTED};">
-          FinSight v2.0 | ルールベース分析ツール<br>
+          4Eseen v2.0 | ルールベース分析ツール<br>
           <span style="color:rgba(255,255,255,0.2);">本ツールは参考情報です</span>
         </div>
         """, unsafe_allow_html=True)
