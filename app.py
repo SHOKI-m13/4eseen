@@ -1627,7 +1627,7 @@ def main():
                 value="7203",
                 max_chars=4,
                 placeholder="例: 7203",
-                help="現在対応: 7203（トヨタ自動車）",
+                help=f"現在対応: {edinet_fetcher.SUPPORTED_LABEL}",
             )
 
         # APIキー: secrets優先 → テキスト入力
@@ -1665,7 +1665,7 @@ def main():
             render_hero_screen()
             st.info(
                 "証券コードを入力して「データ取得」を押してください。  \n"
-                "APIキーなしでもトヨタ（7203）の参考データで分析を試せます。"
+                f"APIキーなしで試せる企業: {edinet_fetcher.SUPPORTED_LABEL}"
             )
             st.stop()
 

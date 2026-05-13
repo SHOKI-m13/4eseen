@@ -1,9 +1,10 @@
 """
 EDINET API 連携モジュール
 
-APIキーなし: トヨタ(7203)のモックデータ（有価証券報告書の公開情報を基にした参考値）
+APIキーなし: モックデータ（有価証券報告書の公開情報を基にした参考値）
 APIキーあり: EDINET API v2 から実データを取得・XBRL解析
 
+対応企業（モック）: 7203 トヨタ自動車 / 6758 ソニーグループ / 8306 三菱UFJ FG
 EDINET API v2 キー取得: https://disclosure2.edinet-fsa.go.jp/
 """
 
@@ -29,104 +30,190 @@ EDINET_API_BASE = "https://disclosure2.edinet-fsa.go.jp/api/v2"
 # 会社マスター（証券コード → EDINET コード）
 # ============================================================
 COMPANY_MASTER: dict[str, dict] = {
-    "7203": {"name": "トヨタ自動車", "edinet_code": "E02144"},
+    "7203": {"name": "トヨタ自動車",         "edinet_code": "E02144"},
+    "6758": {"name": "ソニーグループ",        "edinet_code": "E01777"},
+    "8306": {"name": "三菱UFJフィナンシャル・グループ", "edinet_code": "E03606"},
 }
 
 # ============================================================
 # モックデータ（百万円単位、有価証券報告書の公開情報を基にした参考値）
-# 決算期: 3月末  FY = ending year
+# 決算期: いずれも3月末   FY = 決算終了年
 # ============================================================
+
+# ---- 7203 トヨタ自動車 ----
 _TOYOTA_ROWS = [
-    {
-        "year": 2020,
-        "sales": 29929992, "operating_profit": 2442869,
-        "ordinary_profit": 2442869, "net_income": 2761477,
-        "total_assets": 62303024, "equity": 18975063,
-        "liabilities": 43327961,
-        "current_assets": 20156000, "current_liabilities": 18600000,
-        "cash": 3907000, "accounts_receivable": 2800000,
-        "inventory": 2546000, "fixed_assets": 42147024,
-        "interest_bearing_debt": 26000000,
-        "operating_cash_flow": 3598019, "investing_cash_flow": -2462052,
-        "financing_cash_flow": -900000, "employees": 359542,
-    },
-    {
-        "year": 2021,
-        "sales": 27214594, "operating_profit": 2197748,
-        "ordinary_profit": 2197748, "net_income": 2245261,
-        "total_assets": 62597488, "equity": 20994977,
-        "liabilities": 41602511,
-        "current_assets": 21500000, "current_liabilities": 19200000,
-        "cash": 4521000, "accounts_receivable": 2900000,
-        "inventory": 2300000, "fixed_assets": 41097488,
-        "interest_bearing_debt": 24000000,
-        "operating_cash_flow": 2928127, "investing_cash_flow": -1793548,
-        "financing_cash_flow": -700000, "employees": 366283,
-    },
-    {
-        "year": 2022,
-        "sales": 31379507, "operating_profit": 2995697,
-        "ordinary_profit": 2995697, "net_income": 2850110,
-        "total_assets": 71172591, "equity": 23019003,
-        "liabilities": 48153588,
-        "current_assets": 23500000, "current_liabilities": 21000000,
-        "cash": 5212000, "accounts_receivable": 3100000,
-        "inventory": 2700000, "fixed_assets": 47672591,
-        "interest_bearing_debt": 27000000,
-        "operating_cash_flow": 4434073, "investing_cash_flow": -3188373,
-        "financing_cash_flow": -800000, "employees": 372817,
-    },
-    {
-        "year": 2023,
-        "sales": 37154298, "operating_profit": 3268185,
-        "ordinary_profit": 3268185, "net_income": 2451317,
-        "total_assets": 84902414, "equity": 27224093,
-        "liabilities": 57678321,
-        "current_assets": 27000000, "current_liabilities": 24000000,
-        "cash": 6237000, "accounts_receivable": 3700000,
-        "inventory": 3200000, "fixed_assets": 57902414,
-        "interest_bearing_debt": 30000000,
-        "operating_cash_flow": 4810011, "investing_cash_flow": -3291714,
-        "financing_cash_flow": -900000, "employees": 375235,
-    },
-    {
-        "year": 2024,
-        "sales": 45095325, "operating_profit": 5352934,
-        "ordinary_profit": 5352934, "net_income": 4944933,
-        "total_assets": 94543736, "equity": 32143619,
-        "liabilities": 62400117,
-        "current_assets": 31000000, "current_liabilities": 28000000,
-        "cash": 7812000, "accounts_receivable": 4500000,
-        "inventory": 3800000, "fixed_assets": 63543736,
-        "interest_bearing_debt": 33000000,
-        "operating_cash_flow": 8735116, "investing_cash_flow": -5447826,
-        "financing_cash_flow": -1200000, "employees": 381467,
-    },
+    {"year": 2020, "sales": 29929992, "operating_profit": 2442869,
+     "ordinary_profit": 2442869, "net_income": 2761477,
+     "total_assets": 62303024, "equity": 18975063, "liabilities": 43327961,
+     "current_assets": 20156000, "current_liabilities": 18600000,
+     "cash": 3907000, "accounts_receivable": 2800000,
+     "inventory": 2546000, "fixed_assets": 42147024,
+     "interest_bearing_debt": 26000000,
+     "operating_cash_flow": 3598019, "investing_cash_flow": -2462052,
+     "financing_cash_flow": -900000, "employees": 359542},
+    {"year": 2021, "sales": 27214594, "operating_profit": 2197748,
+     "ordinary_profit": 2197748, "net_income": 2245261,
+     "total_assets": 62597488, "equity": 20994977, "liabilities": 41602511,
+     "current_assets": 21500000, "current_liabilities": 19200000,
+     "cash": 4521000, "accounts_receivable": 2900000,
+     "inventory": 2300000, "fixed_assets": 41097488,
+     "interest_bearing_debt": 24000000,
+     "operating_cash_flow": 2928127, "investing_cash_flow": -1793548,
+     "financing_cash_flow": -700000, "employees": 366283},
+    {"year": 2022, "sales": 31379507, "operating_profit": 2995697,
+     "ordinary_profit": 2995697, "net_income": 2850110,
+     "total_assets": 71172591, "equity": 23019003, "liabilities": 48153588,
+     "current_assets": 23500000, "current_liabilities": 21000000,
+     "cash": 5212000, "accounts_receivable": 3100000,
+     "inventory": 2700000, "fixed_assets": 47672591,
+     "interest_bearing_debt": 27000000,
+     "operating_cash_flow": 4434073, "investing_cash_flow": -3188373,
+     "financing_cash_flow": -800000, "employees": 372817},
+    {"year": 2023, "sales": 37154298, "operating_profit": 3268185,
+     "ordinary_profit": 3268185, "net_income": 2451317,
+     "total_assets": 84902414, "equity": 27224093, "liabilities": 57678321,
+     "current_assets": 27000000, "current_liabilities": 24000000,
+     "cash": 6237000, "accounts_receivable": 3700000,
+     "inventory": 3200000, "fixed_assets": 57902414,
+     "interest_bearing_debt": 30000000,
+     "operating_cash_flow": 4810011, "investing_cash_flow": -3291714,
+     "financing_cash_flow": -900000, "employees": 375235},
+    {"year": 2024, "sales": 45095325, "operating_profit": 5352934,
+     "ordinary_profit": 5352934, "net_income": 4944933,
+     "total_assets": 94543736, "equity": 32143619, "liabilities": 62400117,
+     "current_assets": 31000000, "current_liabilities": 28000000,
+     "cash": 7812000, "accounts_receivable": 4500000,
+     "inventory": 3800000, "fixed_assets": 63543736,
+     "interest_bearing_debt": 33000000,
+     "operating_cash_flow": 8735116, "investing_cash_flow": -5447826,
+     "financing_cash_flow": -1200000, "employees": 381467},
+]
+
+# ---- 6758 ソニーグループ ----
+_SONY_ROWS = [
+    {"year": 2020, "sales": 8665698, "operating_profit": 845567,
+     "ordinary_profit": 845567, "net_income": 582178,
+     "total_assets": 21284581, "equity": 4136637, "liabilities": 17147944,
+     "current_assets": 7000000, "current_liabilities": 8000000,
+     "cash": 1831000, "accounts_receivable": 1350000,
+     "inventory": 720000, "fixed_assets": 14284581,
+     "interest_bearing_debt": 2000000,
+     "operating_cash_flow": 800000, "investing_cash_flow": -900000,
+     "financing_cash_flow": -200000, "employees": 111700},
+    {"year": 2021, "sales": 8999360, "operating_profit": 960197,
+     "ordinary_profit": 960197, "net_income": 1171532,
+     "total_assets": 23178226, "equity": 5242218, "liabilities": 17936008,
+     "current_assets": 8000000, "current_liabilities": 8500000,
+     "cash": 2200000, "accounts_receivable": 1450000,
+     "inventory": 750000, "fixed_assets": 15178226,
+     "interest_bearing_debt": 2200000,
+     "operating_cash_flow": 1200000, "investing_cash_flow": -800000,
+     "financing_cash_flow": -150000, "employees": 109700},
+    {"year": 2022, "sales": 9921518, "operating_profit": 1202670,
+     "ordinary_profit": 1202670, "net_income": 882177,
+     "total_assets": 25375803, "equity": 6042093, "liabilities": 19333710,
+     "current_assets": 8500000, "current_liabilities": 9000000,
+     "cash": 2470000, "accounts_receivable": 1600000,
+     "inventory": 800000, "fixed_assets": 16875803,
+     "interest_bearing_debt": 2400000,
+     "operating_cash_flow": 900000, "investing_cash_flow": -1000000,
+     "financing_cash_flow": -200000, "employees": 108900},
+    {"year": 2023, "sales": 11539837, "operating_profit": 1208765,
+     "ordinary_profit": 1208765, "net_income": 970555,
+     "total_assets": 28602413, "equity": 6813658, "liabilities": 21788755,
+     "current_assets": 9500000, "current_liabilities": 10000000,
+     "cash": 2810000, "accounts_receivable": 1900000,
+     "inventory": 860000, "fixed_assets": 19102413,
+     "interest_bearing_debt": 2800000,
+     "operating_cash_flow": 1100000, "investing_cash_flow": -1200000,
+     "financing_cash_flow": -250000, "employees": 113000},
+    {"year": 2024, "sales": 13020991, "operating_profit": 1180294,
+     "ordinary_profit": 1180294, "net_income": 970555,
+     "total_assets": 31600000, "equity": 7500000, "liabilities": 24100000,
+     "current_assets": 10500000, "current_liabilities": 11000000,
+     "cash": 3000000, "accounts_receivable": 2100000,
+     "inventory": 920000, "fixed_assets": 21100000,
+     "interest_bearing_debt": 3100000,
+     "operating_cash_flow": 1300000, "investing_cash_flow": -1100000,
+     "financing_cash_flow": -300000, "employees": 113000},
+]
+
+# ---- 8306 三菱UFJフィナンシャル・グループ（銀行持株会社）----
+# 銀行は経常収益を売上高代わりに使用。流動資産・流動負債・在庫は業態上N/A。
+_MUFG_ROWS = [
+    {"year": 2020, "sales": 5918408, "operating_profit": 941946,
+     "ordinary_profit": 941946, "net_income": 528064,
+     "total_assets": 295000000, "equity": 15000000, "liabilities": 280000000,
+     "current_assets": np.nan, "current_liabilities": np.nan,
+     "cash": 95000000, "accounts_receivable": np.nan,
+     "inventory": np.nan, "fixed_assets": np.nan,
+     "interest_bearing_debt": np.nan,
+     "operating_cash_flow": 2000000, "investing_cash_flow": -1500000,
+     "financing_cash_flow": -500000, "employees": 162157},
+    {"year": 2021, "sales": 5523778, "operating_profit": 1020478,
+     "ordinary_profit": 1020478, "net_income": 777283,
+     "total_assets": 342000000, "equity": 17500000, "liabilities": 324500000,
+     "current_assets": np.nan, "current_liabilities": np.nan,
+     "cash": 120000000, "accounts_receivable": np.nan,
+     "inventory": np.nan, "fixed_assets": np.nan,
+     "interest_bearing_debt": np.nan,
+     "operating_cash_flow": 3000000, "investing_cash_flow": -2000000,
+     "financing_cash_flow": -300000, "employees": 163082},
+    {"year": 2022, "sales": 6009432, "operating_profit": 1261069,
+     "ordinary_profit": 1261069, "net_income": 1130328,
+     "total_assets": 369000000, "equity": 16500000, "liabilities": 352500000,
+     "current_assets": np.nan, "current_liabilities": np.nan,
+     "cash": 115000000, "accounts_receivable": np.nan,
+     "inventory": np.nan, "fixed_assets": np.nan,
+     "interest_bearing_debt": np.nan,
+     "operating_cash_flow": 4000000, "investing_cash_flow": -3000000,
+     "financing_cash_flow": -200000, "employees": 160486},
+    {"year": 2023, "sales": 8183625, "operating_profit": 1820571,
+     "ordinary_profit": 1820571, "net_income": 1496034,
+     "total_assets": 381000000, "equity": 18000000, "liabilities": 363000000,
+     "current_assets": np.nan, "current_liabilities": np.nan,
+     "cash": 118000000, "accounts_receivable": np.nan,
+     "inventory": np.nan, "fixed_assets": np.nan,
+     "interest_bearing_debt": np.nan,
+     "operating_cash_flow": 5000000, "investing_cash_flow": -4000000,
+     "financing_cash_flow": -400000, "employees": 160486},
+    {"year": 2024, "sales": 9188248, "operating_profit": 2178648,
+     "ordinary_profit": 2178648, "net_income": 1492805,
+     "total_assets": 405000000, "equity": 22000000, "liabilities": 383000000,
+     "current_assets": np.nan, "current_liabilities": np.nan,
+     "cash": 135000000, "accounts_receivable": np.nan,
+     "inventory": np.nan, "fixed_assets": np.nan,
+     "interest_bearing_debt": np.nan,
+     "operating_cash_flow": 6000000, "investing_cash_flow": -5000000,
+     "financing_cash_flow": -500000, "employees": 160000},
 ]
 
 _MOCK_DATA: dict[str, dict] = {
-    "7203": {"name": "トヨタ自動車", "rows": _TOYOTA_ROWS},
+    "7203": {"name": "トヨタ自動車",                    "rows": _TOYOTA_ROWS},
+    "6758": {"name": "ソニーグループ",                   "rows": _SONY_ROWS},
+    "8306": {"name": "三菱UFJフィナンシャル・グループ",   "rows": _MUFG_ROWS},
 }
+
+# 対応企業の表示用テキスト
+SUPPORTED_LABEL = "7203（トヨタ）/ 6758（ソニー）/ 8306（三菱UFJ）"
 
 
 def get_mock_df(securities_code: str) -> pd.DataFrame:
     """モックデータから DataFrame を返す"""
     entry = _MOCK_DATA.get(securities_code)
     if entry is None:
-        available = "、".join(f"{k}（{v['name']}）" for k, v in _MOCK_DATA.items())
         raise ValueError(
-            f"証券コード {securities_code} のモックデータがありません。\n"
-            f"現在対応: {available}"
+            f"証券コード {securities_code} は未対応です。\n"
+            f"現在対応: {SUPPORTED_LABEL}"
         )
     rows = [{"company": entry["name"], **r} for r in entry["rows"]]
     return pd.DataFrame(rows).sort_values("year").reset_index(drop=True)
 
 
 # ============================================================
-# EDINET API 実装
+# EDINET API 実装（APIキーが必要）
 # ============================================================
 
-# XBRL要素名マッピング（J-GAAP / IFRS 両対応、優先順に列挙）
 _XBRL_ELEMENTS: dict[str, list[str]] = {
     "sales": [
         "NetSales", "Revenue", "NetRevenue", "SalesRevenue",
@@ -138,14 +225,12 @@ _XBRL_ELEMENTS: dict[str, list[str]] = {
         "ProfitLossFromOperatingActivities",
     ],
     "ordinary_profit": [
-        "OrdinaryIncome", "ProfitBeforeTax",
-        "ProfitLossBeforeTax",
+        "OrdinaryIncome", "ProfitBeforeTax", "ProfitLossBeforeTax",
     ],
     "net_income": [
         "ProfitLossAttributableToOwnersOfParent",
         "NetIncome", "ProfitLoss", "NetProfit",
         "ProfitAttributableToOwnersOfParent",
-        "ProfitLossAttributableToOwnersOfParentIFRS",
     ],
     "total_assets": ["Assets", "TotalAssets"],
     "equity": [
@@ -175,7 +260,6 @@ _XBRL_ELEMENTS: dict[str, list[str]] = {
     "employees": ["NumberOfEmployees"],
 }
 
-# コンテキスト: 当期（P/L は Duration, B/S は Instant）
 _TARGET_CONTEXTS = frozenset({
     "CurrentYearDuration", "CurrentYearInstant",
     "CurrentYear", "CY", "ConsolidatedMember",
@@ -190,7 +274,6 @@ def _search_annual_docs(edinet_code: str, api_key: str, n_years: int = 5) -> lis
     results = []
     today = date.today()
 
-    # 3月期決算の典型的な提出月（6〜9月）を年度ごとに検索
     for year_offset in range(n_years + 1):
         target_year = today.year - year_offset
         found_this_year = False
@@ -253,40 +336,23 @@ def _parse_xbrl_from_zip(zip_bytes: bytes) -> dict:
     for metric, candidates in _XBRL_ELEMENTS.items():
         if metric in financials:
             continue
-
         for local_name in candidates:
             for elem in root.iter():
                 tag_local = elem.tag.split("}")[-1] if "}" in elem.tag else elem.tag
                 if tag_local != local_name:
                     continue
-
                 ctx = elem.get("contextRef", "")
                 if not any(tc in ctx for tc in _TARGET_CONTEXTS):
                     continue
-
                 raw_text = (elem.text or "").strip()
                 if not re.match(r"^-?\d+$", raw_text):
                     continue
-
                 raw_val = int(raw_text)
-                # decimals 属性で単位スケールを確認
-                decimals = elem.get("decimals", "0")
-                try:
-                    dec = int(decimals)
-                except ValueError:
-                    dec = 0
-
-                # 値が大きい（兆円スケール）場合のみ百万で割る
-                # decimals=-6 かつ値 > 10^9 → 円単位 → 百万円に変換
-                if dec <= -6 and abs(raw_val) > 10**9:
-                    financials[metric] = raw_val / 1_000_000
-                elif abs(raw_val) > 10**9:
+                if abs(raw_val) > 10**9:
                     financials[metric] = raw_val / 1_000_000
                 else:
-                    # すでに百万円単位の可能性
                     financials[metric] = float(raw_val)
                 break
-
             if metric in financials:
                 break
 
@@ -302,11 +368,13 @@ def fetch_from_edinet(
 
     entry = COMPANY_MASTER.get(securities_code)
     if entry is None:
-        raise ValueError(f"証券コード {securities_code} はマスターに未登録です。")
+        raise ValueError(
+            f"証券コード {securities_code} はマスターに未登録です。\n"
+            f"現在対応: {SUPPORTED_LABEL}"
+        )
 
     company_name = entry["name"]
     edinet_code = entry["edinet_code"]
-
     docs = _search_annual_docs(edinet_code, api_key, n_years)
     if not docs:
         raise ValueError(
@@ -368,7 +436,6 @@ def fetch_df(
         df = fetch_from_edinet(code, api_key)
         return df, False
 
-    # APIキーなし → モックデータ
     return get_mock_df(code), True
 
 
