@@ -9,6 +9,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import warnings
+import edinet_fetcher
 
 warnings.filterwarnings("ignore")
 
@@ -1591,29 +1592,101 @@ def render_sidebar(df=None):
 def main():
     render_sidebar()
 
-    # --- CSVアップロードエリア ---
-    uploaded_file = st.file_uploader(
-        "📁  財務諸表CSVをここにドロップ、またはクリックして選択",
-        type=["csv"],
+    # --- 入力モード選択 ---
+    input_mode = st.radio(
+        "input_mode",
+        ["📁 CSVアップロード", "🔍 証券コードで取得（EDINET）"],
+        horizontal=True,
         label_visibility="collapsed",
-        help="UTF-8 / Shift-JIS 形式対応"
     )
 
-    if uploaded_file is None:
-        render_hero_screen()
-        st.stop()
+    df = None
+    is_mock = False
 
-    # データ読み込み
-    df = load_csv(uploaded_file)
-    if df is None:
-        st.stop()
+    # ---- CSV モード ----
+    if input_mode == "📁 CSVアップロード":
+        uploaded_file = st.file_uploader(
+            "📁  財務諸表CSVをここにドロップ、またはクリックして選択",
+            type=["csv"],
+            label_visibility="collapsed",
+            help="UTF-8 / Shift-JIS 形式対応"
+        )
+        if uploaded_file is None:
+            render_hero_screen()
+            st.stop()
+        df = load_csv(uploaded_file)
+        if df is None:
+            st.stop()
+
+    # ---- EDINET モード ----
+    else:
+        col_code, col_btn = st.columns([2, 1])
+        with col_code:
+            code_input = st.text_input(
+                "証券コード（4桁）",
+                value="7203",
+                max_chars=4,
+                placeholder="例: 7203",
+                help="現在対応: 7203（トヨタ自動車）",
+            )
+
+        # APIキー: secrets優先 → テキスト入力
+        api_key = ""
+        try:
+            api_key = st.secrets.get("EDINET_API_KEY", "")
+        except Exception:
+            pass
+        if not api_key:
+            with st.expander("EDINET APIキー設定（任意）"):
+                api_key = st.text_input(
+                    "EDINET API v2 キー",
+                    type="password",
+                    help="未設定の場合はトヨタ(7203)の参考値で動作確認できます。\n取得: https://disclosure2.edinet-fsa.go.jp/",
+                )
+
+        with col_btn:
+            st.markdown("<br>", unsafe_allow_html=True)
+            fetch_btn = st.button("データ取得", use_container_width=True)
+
+        if fetch_btn:
+            with st.spinner("データ取得中..."):
+                try:
+                    fetched_df, fetched_is_mock = edinet_fetcher.fetch_df(
+                        code_input.strip(), api_key or None
+                    )
+                    st.session_state["edinet_df"] = fetched_df
+                    st.session_state["edinet_is_mock"] = fetched_is_mock
+                    st.session_state["edinet_code"] = code_input.strip()
+                except Exception as e:
+                    st.error(f"取得エラー: {e}")
+                    st.stop()
+
+        if "edinet_df" not in st.session_state:
+            render_hero_screen()
+            st.info(
+                "証券コードを入力して「データ取得」を押してください。  \n"
+                "APIキーなしでもトヨタ（7203）の参考データで分析を試せます。"
+            )
+            st.stop()
+
+        df = st.session_state["edinet_df"]
+        is_mock = st.session_state.get("edinet_is_mock", True)
+
+        if is_mock:
+            st.warning(
+                "参考値（モックデータ）を表示中です。"
+                "EDINET APIキーを設定すると実データに切り替わります。"
+            )
 
     # サイドバーにデータ概要を反映
     render_sidebar(df)
 
     # --- 会社選択 ---
-    companies        = sorted(df["company"].unique().tolist())
-    selected_company = st.selectbox("分析する会社を選択", companies, label_visibility="visible")
+    companies = sorted(df["company"].unique().tolist())
+    if len(companies) > 1:
+        selected_company = st.selectbox("分析する会社を選択", companies)
+    else:
+        selected_company = companies[0]
 
     df_company = df[df["company"] == selected_company].copy().reset_index(drop=True)
     if df_company.empty:
