@@ -35,6 +35,9 @@ COMPANY_MASTER: dict[str, dict] = {
     "8306": {"name": "三菱UFJフィナンシャル・グループ", "edinet_code": "E03606"},
 }
 
+# 対応企業の表示用テキスト（モジュール読み込みの早期段階で定義）
+SUPPORTED_LABEL = "7203（トヨタ）/ 6758（ソニー）/ 8306（三菱UFJ）"
+
 # ============================================================
 # モックデータ（百万円単位、有価証券報告書の公開情報を基にした参考値）
 # 決算期: いずれも3月末   FY = 決算終了年
@@ -144,46 +147,46 @@ _MUFG_ROWS = [
     {"year": 2020, "sales": 5918408, "operating_profit": 941946,
      "ordinary_profit": 941946, "net_income": 528064,
      "total_assets": 295000000, "equity": 15000000, "liabilities": 280000000,
-     "current_assets": np.nan, "current_liabilities": np.nan,
-     "cash": 95000000, "accounts_receivable": np.nan,
-     "inventory": np.nan, "fixed_assets": np.nan,
-     "interest_bearing_debt": np.nan,
+     "current_assets": float('nan'), "current_liabilities": float('nan'),
+     "cash": 95000000, "accounts_receivable": float('nan'),
+     "inventory": float('nan'), "fixed_assets": float('nan'),
+     "interest_bearing_debt": float('nan'),
      "operating_cash_flow": 2000000, "investing_cash_flow": -1500000,
      "financing_cash_flow": -500000, "employees": 162157},
     {"year": 2021, "sales": 5523778, "operating_profit": 1020478,
      "ordinary_profit": 1020478, "net_income": 777283,
      "total_assets": 342000000, "equity": 17500000, "liabilities": 324500000,
-     "current_assets": np.nan, "current_liabilities": np.nan,
-     "cash": 120000000, "accounts_receivable": np.nan,
-     "inventory": np.nan, "fixed_assets": np.nan,
-     "interest_bearing_debt": np.nan,
+     "current_assets": float('nan'), "current_liabilities": float('nan'),
+     "cash": 120000000, "accounts_receivable": float('nan'),
+     "inventory": float('nan'), "fixed_assets": float('nan'),
+     "interest_bearing_debt": float('nan'),
      "operating_cash_flow": 3000000, "investing_cash_flow": -2000000,
      "financing_cash_flow": -300000, "employees": 163082},
     {"year": 2022, "sales": 6009432, "operating_profit": 1261069,
      "ordinary_profit": 1261069, "net_income": 1130328,
      "total_assets": 369000000, "equity": 16500000, "liabilities": 352500000,
-     "current_assets": np.nan, "current_liabilities": np.nan,
-     "cash": 115000000, "accounts_receivable": np.nan,
-     "inventory": np.nan, "fixed_assets": np.nan,
-     "interest_bearing_debt": np.nan,
+     "current_assets": float('nan'), "current_liabilities": float('nan'),
+     "cash": 115000000, "accounts_receivable": float('nan'),
+     "inventory": float('nan'), "fixed_assets": float('nan'),
+     "interest_bearing_debt": float('nan'),
      "operating_cash_flow": 4000000, "investing_cash_flow": -3000000,
      "financing_cash_flow": -200000, "employees": 160486},
     {"year": 2023, "sales": 8183625, "operating_profit": 1820571,
      "ordinary_profit": 1820571, "net_income": 1496034,
      "total_assets": 381000000, "equity": 18000000, "liabilities": 363000000,
-     "current_assets": np.nan, "current_liabilities": np.nan,
-     "cash": 118000000, "accounts_receivable": np.nan,
-     "inventory": np.nan, "fixed_assets": np.nan,
-     "interest_bearing_debt": np.nan,
+     "current_assets": float('nan'), "current_liabilities": float('nan'),
+     "cash": 118000000, "accounts_receivable": float('nan'),
+     "inventory": float('nan'), "fixed_assets": float('nan'),
+     "interest_bearing_debt": float('nan'),
      "operating_cash_flow": 5000000, "investing_cash_flow": -4000000,
      "financing_cash_flow": -400000, "employees": 160486},
     {"year": 2024, "sales": 9188248, "operating_profit": 2178648,
      "ordinary_profit": 2178648, "net_income": 1492805,
      "total_assets": 405000000, "equity": 22000000, "liabilities": 383000000,
-     "current_assets": np.nan, "current_liabilities": np.nan,
-     "cash": 135000000, "accounts_receivable": np.nan,
-     "inventory": np.nan, "fixed_assets": np.nan,
-     "interest_bearing_debt": np.nan,
+     "current_assets": float('nan'), "current_liabilities": float('nan'),
+     "cash": 135000000, "accounts_receivable": float('nan'),
+     "inventory": float('nan'), "fixed_assets": float('nan'),
+     "interest_bearing_debt": float('nan'),
      "operating_cash_flow": 6000000, "investing_cash_flow": -5000000,
      "financing_cash_flow": -500000, "employees": 160000},
 ]
@@ -193,9 +196,6 @@ _MOCK_DATA: dict[str, dict] = {
     "6758": {"name": "ソニーグループ",                   "rows": _SONY_ROWS},
     "8306": {"name": "三菱UFJフィナンシャル・グループ",   "rows": _MUFG_ROWS},
 }
-
-# 対応企業の表示用テキスト
-SUPPORTED_LABEL = "7203（トヨタ）/ 6758（ソニー）/ 8306（三菱UFJ）"
 
 
 def get_mock_df(securities_code: str) -> pd.DataFrame:
